@@ -1,0 +1,27 @@
+# Build results
+bin/
+obj/
+out/
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio / Rider
+.vs/
+.vscode/
+.idea/
+
+# NuGet packages
+*.nupkg
+*.snupkg
+packages/
+
+# macOS
+.DS_Store
+
+# Environment variables
+appsettings.Development.json
+*.env
