@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FraudDetection.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260206194844_InitialCreate")]
+    [Migration("20260209084141_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -57,9 +57,8 @@ namespace FraudDetection.Infrastructure.Migrations
                     b.Property<int>("RiskScore")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<string>("UserId")
                         .IsRequired()

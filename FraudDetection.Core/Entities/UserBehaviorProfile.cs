@@ -19,6 +19,7 @@ public class UserBehaviorProfile
     public string? PrimaryLocation { get; set; }
     public int UniqueLocationsCount { get; set; }
     
+    
     // Device tracking
     public int UniqueDevicesCount { get; set; }
     

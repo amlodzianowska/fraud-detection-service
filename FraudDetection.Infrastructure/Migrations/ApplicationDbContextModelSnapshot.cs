@@ -54,9 +54,8 @@ namespace FraudDetection.Infrastructure.Migrations
                     b.Property<int>("RiskScore")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<string>("UserId")
                         .IsRequired()
