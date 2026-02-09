@@ -25,7 +25,7 @@ namespace FraudDetection.Infrastructure.Migrations
                     Longitude = table.Column<double>(type: "double precision", nullable: true),
                     DeviceId = table.Column<string>(type: "text", nullable: true),
                     RiskScore = table.Column<int>(type: "integer", nullable: false),
-                    Status = table.Column<string>(type: "text", nullable: false)
+                    Status = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {

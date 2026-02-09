@@ -1,3 +1,5 @@
+using FraudDetection.Core.Entities.Enums;
+
 namespace FraudDetection.Core.Entities;
 
 public class Order
@@ -18,5 +20,6 @@ public class Order
     
     // Fraud detection results
     public int RiskScore { get; set; }
-    public string Status { get; set; } = "pending";
+    
+    public OrderStatus Status { get; set; } = OrderStatus.Pending;
 }

@@ -1,6 +1,8 @@
 using FraudDetection.Core.Interfaces;
+using FraudDetection.Core.Services;
 using FraudDetection.Infrastructure.Data;
 using FraudDetection.Infrastructure.Repositories;
+using FraudDetection.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +20,8 @@ public static class DependencyInjection
 
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IUserBehaviorProfileRepository, UserBehaviorProfileRepository>();
+        
+        services.AddScoped<IFraudScoringService, FraudScoringService>();
 
         return services;
     }
