@@ -1,23 +1,24 @@
-namespace FraudDetection.Core.Entities;
+using FraudDetection.Core.Entities;
 
-public class Order
+namespace FraudDetection.Api.Models;
+
+public class OrderResponseDto
 {
     public Guid Id { get; set; }
     public string UserId { get; set; } = string.Empty;
     public decimal Amount { get; set; }
-    public DateTime CreatedAt { get; set; }
     public string Currency { get; set; } = "USD";
+    public DateTime CreatedAt { get; set; }
     
     // Location data
     public string? IpAddress { get; set; }
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
-    
-    // Device fingerprinting
     public string? DeviceId { get; set; }
     
-    // Fraud detection results
+    // Fraud assessment results
     public int RiskScore { get; set; }
-    
-    public OrderStatus Status { get; set; } = OrderStatus.Pending;
+    public OrderStatus Status { get; set; }
+    public FraudDecision FraudDecision { get; set; }
+    public List<string> RiskFactors { get; set; } = new();
 }
