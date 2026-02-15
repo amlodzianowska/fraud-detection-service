@@ -1,5 +1,3 @@
-using FraudDetection.Core.Entities.Enums;
-
 namespace FraudDetection.Core.Entities;
 
 public class FraudAssessmentResult

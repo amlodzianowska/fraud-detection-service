@@ -1,5 +1,4 @@
 using FraudDetection.Core.Entities;
-using FraudDetection.Core.Entities.Enums;
 using FraudDetection.Core.Interfaces;
 using FraudDetection.Core.Services;
 

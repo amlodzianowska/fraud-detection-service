@@ -1,4 +1,4 @@
-namespace FraudDetection.Core.Entities.Enums;
+namespace FraudDetection.Core.Entities;
 
 public enum FraudDecision
 {
