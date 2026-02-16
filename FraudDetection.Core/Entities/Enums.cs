@@ -14,3 +14,10 @@ public enum OrderStatus
     Declined,
     UnderReview
 }
+
+public enum RiskFactorType
+{
+    AccountAge,
+    Velocity,
+    AmountDeviation
+}

@@ -43,6 +43,7 @@ public class OrdersController : ControllerBase
         var assessment = await _fraudScoringService.AssessOrderAsync(order);
         
         order.RiskScore = assessment.RiskScore;
+        order.RiskFactors = assessment.RiskFactors;
         order.Status = assessment.Decision switch
         {
             FraudDecision.Approved => OrderStatus.Approved,
@@ -98,7 +99,7 @@ public class OrdersController : ControllerBase
                 OrderStatus.UnderReview => FraudDecision.Review,
                 _ => FraudDecision.Review
             },
-            RiskFactors = new List<string>()
+            RiskFactors = new List<RiskFactor>()
         }).ToList();
     
         return Ok(response);
@@ -132,7 +133,7 @@ public class OrdersController : ControllerBase
                 OrderStatus.UnderReview => FraudDecision.Review,
                 _ => FraudDecision.Review
             },
-            RiskFactors = new List<string>()
+            RiskFactors = new List<RiskFactor>()
         };
 
         return Ok(response);

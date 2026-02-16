@@ -20,4 +20,6 @@ public class Order
     public int RiskScore { get; set; }
     
     public OrderStatus Status { get; set; } = OrderStatus.Pending;
+    
+    public List<RiskFactor> RiskFactors { get; set; } = new();
 }

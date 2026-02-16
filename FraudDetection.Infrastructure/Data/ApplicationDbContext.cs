@@ -12,6 +12,7 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<UserBehaviorProfile> UserBehaviorProfiles => Set<UserBehaviorProfile>();
+    public DbSet<RiskFactor> RiskFactors => Set<RiskFactor>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -31,6 +32,15 @@ public class ApplicationDbContext : DbContext
             entity.HasIndex(e => e.UserId).IsUnique();
             entity.Property(e => e.AverageOrderAmount).HasPrecision(18, 2);
             entity.Property(e => e.LifetimeSpend).HasPrecision(18, 2);
+        });
+        
+        modelBuilder.Entity<RiskFactor>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.OrderId);
+            entity.HasOne<Order>()
+                .WithMany(o => o.RiskFactors)
+                .HasForeignKey(e => e.OrderId);
         });
     }
 }
