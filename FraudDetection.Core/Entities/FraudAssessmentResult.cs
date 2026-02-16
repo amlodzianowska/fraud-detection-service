@@ -6,7 +6,7 @@ public class FraudAssessmentResult
     
     public FraudDecision Decision { get; set; }
     
-    public List<string> RiskFactors { get; set; } = new();
+    public List<RiskFactor> RiskFactors { get; set; } = new();
     
     public DateTime AssessedAt { get; set; }
 }

@@ -20,5 +20,5 @@ public class OrderResponseDto
     public int RiskScore { get; set; }
     public OrderStatus Status { get; set; }
     public FraudDecision FraudDecision { get; set; }
-    public List<string> RiskFactors { get; set; } = new();
+    public List<RiskFactor> RiskFactors { get; set; } = new();
 }

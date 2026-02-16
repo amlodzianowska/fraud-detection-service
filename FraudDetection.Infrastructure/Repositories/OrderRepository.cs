@@ -23,7 +23,9 @@ public class OrderRepository : IOrderRepository
 
     public async Task<Order?> GetByIdAsync(Guid orderId)
     {
-        return await _dbContext.Orders.FindAsync(orderId);
+        return await _dbContext.Orders
+            .Include(o => o.RiskFactors)
+            .FirstOrDefaultAsync(o => o.Id == orderId);
     }
 
     public async Task<List<Order>> GetByUserIdAsync(string userId)

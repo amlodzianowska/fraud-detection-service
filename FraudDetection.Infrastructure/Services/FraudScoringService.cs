@@ -19,7 +19,7 @@ public class FraudScoringService : IFraudScoringService
 
     public async Task<FraudAssessmentResult> AssessOrderAsync(Order order)
     {
-        var riskFactors = new List<string>();
+        var riskFactors = new List<RiskFactor>();
         var riskScore = 0;
 
         // Load or create user behavior profile
@@ -38,13 +38,24 @@ public class FraudScoringService : IFraudScoringService
                 LastUpdated = DateTime.UtcNow
             };
             riskScore += 20;
-            riskFactors.Add("New account");
+            riskFactors.Add(new RiskFactor
+            {
+                Id = Guid.NewGuid(),
+                OrderId = order.Id,
+                Type = RiskFactorType.AccountAge,
+                Description = "New account",
+                CreatedAt = DateTime.UtcNow
+            });
         }
         else
         {
-            // Run fraud checks on existing user
-            riskScore += await CheckVelocity(order, riskFactors);
-            riskScore += CheckAmountDeviation(order, profile, riskFactors);
+            var (velocityScore, velocityFactors) = await CheckVelocity(order);
+            riskScore += velocityScore;
+            riskFactors.AddRange(velocityFactors);
+
+            var (deviationScore, deviationFactors) = CheckAmountDeviation(order, profile);
+            riskScore += deviationScore;
+            riskFactors.AddRange(deviationFactors);
         }
 
         // Determine decision based on score
@@ -89,9 +100,11 @@ public class FraudScoringService : IFraudScoringService
         profile.LastUpdated = DateTime.UtcNow;
     }
 
-    private async Task<int> CheckVelocity(Order order, List<string> riskFactors)
+    private async Task<(int score, List<RiskFactor> factors)> CheckVelocity(Order order)
     {
-        var velocityScore = 0;
+        var score = 0;
+        var factors = new List<RiskFactor>();
+
         var last24Hours = await _orderRepository.GetRecentByUserIdAsync(
             order.UserId, DateTime.UtcNow.AddHours(-24));
         var last7Days = await _orderRepository.GetRecentByUserIdAsync(
@@ -99,48 +112,82 @@ public class FraudScoringService : IFraudScoringService
 
         if (last24Hours.Count >= 5)
         {
-            velocityScore += 30;
-            riskFactors.Add($"High velocity: {last24Hours.Count} orders in 24 hours");
+            score += 30;
+            factors.Add(new RiskFactor
+            {
+                Id = Guid.NewGuid(),
+                OrderId = order.Id,
+                Type = RiskFactorType.Velocity,
+                Description = $"High velocity: {last24Hours.Count} orders in 24 hours",
+                CreatedAt = DateTime.UtcNow
+            });
         }
         else if (last24Hours.Count >= 3)
         {
-            velocityScore += 15;
-            riskFactors.Add($"Moderate velocity: {last24Hours.Count} orders in 24 hours");
+            score += 15;
+            factors.Add(new RiskFactor
+            {
+                Id = Guid.NewGuid(),
+                OrderId = order.Id,
+                Type = RiskFactorType.Velocity,
+                Description = $"Moderate velocity: {last24Hours.Count} orders in 24 hours",
+                CreatedAt = DateTime.UtcNow
+            });
         }
 
         if (last7Days.Count >= 20)
         {
-            velocityScore += 20;
-            riskFactors.Add($"High weekly volume: {last7Days.Count} orders in 7 days");
+            score += 20;
+            factors.Add(new RiskFactor
+            {
+                Id = Guid.NewGuid(),
+                OrderId = order.Id,
+                Type = RiskFactorType.Velocity,
+                Description = $"High weekly volume: {last7Days.Count} orders in 7 days",
+                CreatedAt = DateTime.UtcNow
+            });
         }
 
-        return velocityScore;
+        return (score, factors);
     }
 
-    private int CheckAmountDeviation(Order order, UserBehaviorProfile profile, List<string> riskFactors)
+    private (int score, List<RiskFactor> factors) CheckAmountDeviation(Order order, UserBehaviorProfile profile)
     {
-        var deviationScore = 0;
+        var score = 0;
+        var factors = new List<RiskFactor>();
 
-        // Skip check if user has no order history
         if (profile.TotalOrders == 0 || profile.AverageOrderAmount == 0)
         {
-            return deviationScore;
+            return (score, factors);
         }
 
-        // Calculate deviation from average
         var deviationMultiple = order.Amount / profile.AverageOrderAmount;
 
         if (deviationMultiple >= 5)
         {
-            deviationScore += 40;
-            riskFactors.Add($"Order amount ${order.Amount} is {deviationMultiple:F}x higher than average ${profile.AverageOrderAmount}");
+            score += 40;
+            factors.Add(new RiskFactor
+            {
+                Id = Guid.NewGuid(),
+                OrderId = order.Id,
+                Type = RiskFactorType.AmountDeviation,
+                Description = $"Order amount ${order.Amount} is {deviationMultiple:F1}x higher than average ${profile.AverageOrderAmount}",
+                CreatedAt = DateTime.UtcNow
+            });
         }
         else if (deviationMultiple >= 3)
         {
-            deviationScore += 25;
-            riskFactors.Add($"Order amount ${order.Amount} is {deviationMultiple:F1}x higher than average ${profile.AverageOrderAmount}");
+            score += 25;
+            factors.Add(new RiskFactor
+            {
+                Id = Guid.NewGuid(),
+                OrderId = order.Id,
+                Type = RiskFactorType.AmountDeviation,
+                Description = $"Order amount ${order.Amount} is {deviationMultiple:F1}x higher than average ${profile.AverageOrderAmount}",
+                CreatedAt = DateTime.UtcNow
+            });
         }
 
-        return deviationScore;
+        return (score, factors);
     }
 }
