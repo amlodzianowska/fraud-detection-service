@@ -138,4 +138,50 @@ public class OrdersController : ControllerBase
 
         return Ok(response);
     }
+    
+    [HttpPatch("{orderId:guid}/review")]
+    public async Task<ActionResult<OrderResponseDto>> ReviewOrder(Guid orderId, [FromBody] ReviewOrderRequestDto request)
+    {
+        if (request.Decision != FraudDecision.Approved && request.Decision != FraudDecision.Declined)
+        {
+            return BadRequest("Decision must be either Approved or Declined.");
+        }
+
+        var order = await _orderRepository.GetByIdAsync(orderId);
+
+        if (order == null)
+        {
+            return NotFound();
+        }
+
+        if (order.Status != OrderStatus.UnderReview)
+        {
+            return BadRequest($"Order cannot be reviewed. Current status: {order.Status}");
+        }
+
+        order.Status = request.Decision == FraudDecision.Approved
+            ? OrderStatus.Approved
+            : OrderStatus.Declined;
+
+        await _orderRepository.UpdateAsync(order);
+
+        var response = new OrderResponseDto
+        {
+            Id = order.Id,
+            UserId = order.UserId,
+            Amount = order.Amount,
+            Currency = order.Currency,
+            CreatedAt = order.CreatedAt,
+            IpAddress = order.IpAddress,
+            Latitude = order.Latitude,
+            Longitude = order.Longitude,
+            DeviceId = order.DeviceId,
+            RiskScore = order.RiskScore,
+            Status = order.Status,
+            FraudDecision = request.Decision,
+            RiskFactors = order.RiskFactors
+        };
+
+        return Ok(response);
+    }
 }
