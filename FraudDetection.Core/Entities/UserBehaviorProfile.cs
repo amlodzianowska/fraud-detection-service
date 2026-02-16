@@ -10,15 +10,9 @@ public class UserBehaviorProfile
     public decimal AverageOrderAmount { get; set; }
     public decimal LifetimeSpend { get; set; }
     
-    // Time-based velocity tracking
-    public int OrdersLast24Hours { get; set; }
-    public int OrdersLast7Days { get; set; }
-    public int OrdersLast30Days { get; set; }
-    
     // Geographic patterns
     public string? PrimaryLocation { get; set; }
     public int UniqueLocationsCount { get; set; }
-    
     
     // Device tracking
     public int UniqueDevicesCount { get; set; }
