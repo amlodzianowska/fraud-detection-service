@@ -103,4 +103,38 @@ public class OrdersController : ControllerBase
     
         return Ok(response);
     }
+    
+    [HttpGet("{orderId:guid}")]
+    public async Task<ActionResult<OrderResponseDto>> GetOrderById(Guid orderId)
+    {
+        var order = await _orderRepository.GetByIdAsync(orderId);
+
+        if (order == null)
+            return NotFound();
+
+        var response = new OrderResponseDto
+        {
+            Id = order.Id,
+            UserId = order.UserId,
+            Amount = order.Amount,
+            Currency = order.Currency,
+            CreatedAt = order.CreatedAt,
+            IpAddress = order.IpAddress,
+            Latitude = order.Latitude,
+            Longitude = order.Longitude,
+            DeviceId = order.DeviceId,
+            RiskScore = order.RiskScore,
+            Status = order.Status,
+            FraudDecision = order.Status switch
+            {
+                OrderStatus.Approved => FraudDecision.Approved,
+                OrderStatus.Declined => FraudDecision.Declined,
+                OrderStatus.UnderReview => FraudDecision.Review,
+                _ => FraudDecision.Review
+            },
+            RiskFactors = new List<string>()
+        };
+
+        return Ok(response);
+    }
 }
