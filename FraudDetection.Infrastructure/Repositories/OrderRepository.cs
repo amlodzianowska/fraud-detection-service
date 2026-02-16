@@ -43,4 +43,11 @@ public class OrderRepository : IOrderRepository
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
     }
+    
+    public async Task<Order> UpdateAsync(Order order)
+    {
+        _dbContext.Orders.Update(order);
+        await _dbContext.SaveChangesAsync();
+        return order;
+    }
 }
