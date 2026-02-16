@@ -103,24 +103,4 @@ public class OrdersController : ControllerBase
     
         return Ok(response);
     }
-    
-    [HttpGet("user/velocity/{userId}")]
-    public async Task<ActionResult> GetUserOrderVelocity(string userId)
-    {
-        var last24Hours = await _orderRepository.GetRecentByUserIdAsync(
-            userId, DateTime.UtcNow.AddHours(-24));
-        var last7Days = await _orderRepository.GetRecentByUserIdAsync(
-            userId, DateTime.UtcNow.AddDays(-7));
-        var last30Days = await _orderRepository.GetRecentByUserIdAsync(
-            userId, DateTime.UtcNow.AddDays(-30));
-
-        var response = new
-        {
-            OrdersLast24Hours = last24Hours.Count,
-            OrdersLast7Days = last7Days.Count,
-            OrdersLast30Days = last30Days.Count
-        };
-
-        return Ok(response);
-    }
 }
