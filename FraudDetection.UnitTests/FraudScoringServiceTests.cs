@@ -34,4 +34,44 @@ public class FraudScoringServiceTests
         Assert.Single(result.RiskFactors);
         Assert.Equal(RiskFactorType.AccountAge, result.RiskFactors[0].Type);
     }
+    
+    [Fact]
+    public async Task AssessOrderAsync_ReturningUserWithLargeAmount_AddsDeviationScore()
+    {
+        // 1. Set up
+        var profileRepo = Substitute.For<IUserBehaviorProfileRepository>();
+        var orderRepo = Substitute.For<IOrderRepository>();
+
+        var userId = "returning-user-456";
+
+        var existingProfile = new UserBehaviorProfile
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            TotalOrders = 10,
+            AverageOrderAmount = 50m
+        };
+        profileRepo.GetByUserIdAsync(userId).Returns(existingProfile);
+
+        // No recent orders -> velocity adds nothing
+        orderRepo.GetRecentByUserIdAsync(Arg.Any<string>(), Arg.Any<DateTime>())
+            .Returns(new List<Order>());
+
+        var service = new FraudScoringService(profileRepo, orderRepo);
+
+        var order = new Order
+        {
+            Id = Guid.NewGuid(),
+            UserId = "returning-user-456",
+            Amount = 300m,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        // 2. Run
+        var result = await service.AssessOrderAsync(order);
+
+        // 3. Check
+        Assert.Equal(40, result.RiskScore);
+        Assert.Contains(result.RiskFactors, f => f.Type == RiskFactorType.AmountDeviation);
+    }
 }
